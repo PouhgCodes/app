@@ -4,62 +4,60 @@
     <meta charset="UTF-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <title>InvertApp</title>
+    <title>AR Camera Preview</title>
     <style>
-        #sceneContainer {
+        #vrContainer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
             width: 100vw;
             height: 100vh;
-            position: absolute;
-            top: 0;
-            left: 0;
+            background-color: black;
+        }
+
+        #videoContainer {
+            width: 50vw;
+            height: 100vh;
+            background-color: gray;
+            overflow: hidden;
+        }
+
+        #videoElement {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1); /* Flip horizontally for a mirror effect */
         }
     </style>
-    
 </head>
 <body>
     <!-- Add a button to start the camera -->
     <button onclick="cameraStart()">Start Camera</button>
-    <!-- Add a container for the Three.js scene -->
-    <div id="sceneContainer"></div>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Add a container for the VR-like camera preview -->
+    <div id="vrContainer">
+        <div id="videoContainer">
+            <video id="videoElement" autoplay playsinline></video>
+        </div>
+        <div id="videoContainer">
+            <video id="videoElement" autoplay playsinline></video>
+        </div>
+    </div>
+
     <script>
-        // Set constraints for the video stream
-        var constraints = { video: true, audio: false, facingMode: "environment" };
+        var constraints = { video: { facingMode: "environment" }, audio: false };
+        var videoElements = document.querySelectorAll("#videoElement");
 
-        function initThreeJs(cameraView) {
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.getElementById('sceneContainer').appendChild(renderer.domElement);
-    
-    // Create your objects, add them to the scene, set up lighting, etc.
-    
-    camera.position.z = 5;
-    
-    function animate() {
-        requestAnimationFrame(animate);
-        renderer.render(scene, camera);
-    }
-    
-    animate();
-}
-
-
-        // Access the device camera and stream to cameraView
         function cameraStart() {
             console.log("Requesting camera access...");
-            navigator.mediaDevices
-            .getUserMedia(constraints)
+            navigator.mediaDevices.getUserMedia(constraints)
             .then(function(stream) {
                 console.log("Camera access granted:", stream);
-                var cameraView = document.createElement("video"); // Create a new video element
-                cameraView.srcObject = stream;
-                cameraView.onloadedmetadata = function(e) {
-                    initThreeJs(cameraView); // Pass the cameraView element to initThreeJs
-                };
+                videoElements.forEach(function(videoElement) {
+                    videoElement.srcObject = stream;
+                    videoElement.onloadedmetadata = function(e) {
+                        videoElement.play();
+                    };
+                });
             })
             .catch(function(error) {
                 console.error("Camera access denied or error:", error);
