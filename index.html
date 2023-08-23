@@ -25,7 +25,9 @@
             .then(function(stream) {
                 console.log("Camera access granted:", stream);
                 cameraView.srcObject = stream;
-                initThreeJs();
+                cameraView.onloadedmetadata = function(e) {
+                    initThreeJs();
+                };
             })
             .catch(function(error) {
                 console.error("Camera access denied or error:", error);
