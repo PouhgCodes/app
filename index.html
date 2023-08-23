@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <title>AR Camera Preview</title>
     <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
         #vrContainer {
             display: flex;
             justify-content: center;
@@ -27,12 +32,11 @@
             height: 100%;
             object-fit: cover;
             transform: scaleX(-1); /* Flip horizontally for a mirror effect */
+            filter: invert(1); /* Invert colors */
         }
     </style>
 </head>
 <body>
-    <!-- Add a button to start the camera -->
-    <button onclick="cameraStart()">Start Camera</button>
     <!-- Add a container for the VR-like camera preview -->
     <div id="vrContainer">
         <div id="videoContainer">
@@ -47,22 +51,18 @@
         var constraints = { video: { facingMode: "environment" }, audio: false };
         var videoElements = document.querySelectorAll("#videoElement");
 
-        function cameraStart() {
-            console.log("Requesting camera access...");
-            navigator.mediaDevices.getUserMedia(constraints)
-            .then(function(stream) {
-                console.log("Camera access granted:", stream);
-                videoElements.forEach(function(videoElement) {
-                    videoElement.srcObject = stream;
-                    videoElement.onloadedmetadata = function(e) {
-                        videoElement.play();
-                    };
-                });
-            })
-            .catch(function(error) {
-                console.error("Camera access denied or error:", error);
+        navigator.mediaDevices.getUserMedia(constraints)
+        .then(function(stream) {
+            videoElements.forEach(function(videoElement) {
+                videoElement.srcObject = stream;
+                videoElement.onloadedmetadata = function(e) {
+                    videoElement.play();
+                };
             });
-        }
+        })
+        .catch(function(error) {
+            console.error("Camera access denied or error:", error);
+        });
     </script>
 </body>
 </html>
