@@ -5,6 +5,16 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <title>InvertApp</title>
+    <style>
+        #sceneContainer {
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+    
 </head>
 <body>
     <!-- Add a button to start the camera -->
@@ -17,13 +27,26 @@
         // Set constraints for the video stream
         var constraints = { video: true, audio: false, facingMode: "environment" };
 
-        // Initialize the Three.js scene and camera
         function initThreeJs(cameraView) {
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById('sceneContainer').appendChild(renderer.domElement);
+    
+    // Create your objects, add them to the scene, set up lighting, etc.
+    
+    camera.position.z = 5;
+    
+    function animate() {
+        requestAnimationFrame(animate);
+        renderer.render(scene, camera);
+    }
+    
+    animate();
+}
 
-            // Rest of the Three.js code...
-        }
 
         // Access the device camera and stream to cameraView
         function cameraStart() {
