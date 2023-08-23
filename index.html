@@ -16,7 +16,15 @@
     <script>
         // Set constraints for the video stream
         var constraints = { video: true, audio: false, facingMode: "environment" };
-        
+
+        // Initialize the Three.js scene and camera
+        function initThreeJs(cameraView) {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+            // Rest of the Three.js code...
+        }
+
         // Access the device camera and stream to cameraView
         function cameraStart() {
             console.log("Requesting camera access...");
@@ -33,14 +41,6 @@
             .catch(function(error) {
                 console.error("Camera access denied or error:", error);
             });
-        }
-
-        // Initialize the Three.js scene and camera
-        function initThreeJs(cameraView) {
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            
-            // Rest of the Three.js code...
         }
     </script>
 </body>
