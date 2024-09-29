@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <title>AR Camera Preview with Wide-Angle</title>
+    <title>AR Camera Preview with Wide-Angle and Filters</title>
     <style>
         body {
             margin: 0;
@@ -31,9 +31,8 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            /* Keep the mirror effect (flip horizontally) */
-            transform: scaleX(-1); 
-            filter: invert(100%) grayscale(100%); /* Invert colors */
+            transform: scaleX(-1); /* Keep the mirror effect (flip horizontally) */
+            filter: invert(100%) grayscale(100%); /* Apply grayscale + invert filter */
         }
     </style>
 </head>
@@ -51,14 +50,15 @@
     <script>
         var constraints = {
             video: {
-                facingMode: "environment", // Back camera
-                width: { ideal: 3840 }, // 4K resolution width (ideal)
-                height: { ideal: 2160 }, // 4K resolution height (ideal)
-                frameRate: { ideal: 60 }, // Aim for 60 fps for smoother video
+                facingMode: "environment", // Use the back camera
+                width: { ideal: 3840 }, // Aim for a wide resolution
+                height: { ideal: 2160 }, // Aim for a wide resolution
+                frameRate: { ideal: 60 }, // Aim for 60 fps
                 advanced: [
-                    { noiseSuppression: false }, // Disable noise suppression (experimental)
-                    { aspectRatio: 1.33 }, // Prefer wide-angle lens (if available, 4:3 aspect ratio)
-                    { width: { min: 1920 }, height: { min: 1080 } } // Wide angle resolution constraint (minimum Full HD)
+                    { width: { ideal: 3840 }, height: { ideal: 2160 } }, // Max out width and height
+                    { facingMode: { exact: "environment" } }, // Ensure back camera is used
+                    { zoom: { ideal: 0 } }, // Request the minimum zoom level (widest field of view)
+                    { fieldOfView: { ideal: 120 } }, // Request the widest possible FOV (fisheye effect if available)
                 ]
             },
             audio: false
