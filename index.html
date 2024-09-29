@@ -48,7 +48,18 @@
     </div>
 
     <script>
-        var constraints = { video: { facingMode: "environment" }, audio: false };
+        var constraints = {
+    video: {
+        facingMode: "environment",
+        width: { ideal: 3840 }, // 4K resolution or higher
+        height: { ideal: 2160 },
+        frameRate: { ideal: 60 },
+        advanced: [
+            { zoom: { ideal: 0 } },  // Request minimum zoom (to simulate ultra-wide)
+            { aspectRatio: { ideal: 16 / 9 } }  // Wide aspect ratio for ultra-wide lens
+        ]
+    }
+}
         var videoElements = document.querySelectorAll("#videoElement");
 
         navigator.mediaDevices.getUserMedia(constraints)
