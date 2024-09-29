@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <title>AR Camera Preview with Wide-Angle and Filters</title>
+    <title>AR Camera Preview</title>
     <style>
         body {
             margin: 0;
@@ -31,8 +31,8 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transform: scaleX(-1); /* Keep the mirror effect (flip horizontally) */
-            filter: invert(100%) grayscale(100%); /* Apply grayscale + invert filter */
+            /* transform: scaleX(-1); /* Flip horizontally for a mirror effect */
+            filter: invert(100%) grayscale(100%);; /* Invert colors */
         }
     </style>
 </head>
@@ -40,31 +40,16 @@
     <!-- Add a container for the VR-like camera preview -->
     <div id="vrContainer">
         <div id="videoContainer">
-            <video id="videoElement1" autoplay playsinline></video>
+            <video id="videoElement" autoplay playsinline></video>
         </div>
         <div id="videoContainer">
-            <video id="videoElement2" autoplay playsinline></video>
+            <video id="videoElement" autoplay playsinline></video>
         </div>
     </div>
 
     <script>
-        var constraints = {
-            video: {
-                facingMode: "environment", // Use the back camera
-                width: { ideal: 3840 }, // Aim for a wide resolution
-                height: { ideal: 2160 }, // Aim for a wide resolution
-                frameRate: { ideal: 60 }, // Aim for 60 fps
-                advanced: [
-                    { width: { ideal: 3840 }, height: { ideal: 2160 } }, // Max out width and height
-                    { facingMode: { exact: "environment" } }, // Ensure back camera is used
-                    { zoom: { ideal: 0 } }, // Request the minimum zoom level (widest field of view)
-                    { fieldOfView: { ideal: 120 } }, // Request the widest possible FOV (fisheye effect if available)
-                ]
-            },
-            audio: false
-        };
-
-        var videoElements = [document.getElementById("videoElement1"), document.getElementById("videoElement2")];
+        var constraints = { video: { facingMode: "environment" }, audio: false };
+        var videoElements = document.querySelectorAll("#videoElement");
 
         navigator.mediaDevices.getUserMedia(constraints)
         .then(function(stream) {
