@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <title>AR Camera Preview with Wide-Angle and Scrollable Canvas</title>
+    <title>AR Camera Preview</title>
     <style>
         body {
             margin: 0;
@@ -35,76 +35,17 @@
             transform: scaleX(-1); 
             filter: invert(100%) grayscale(100%); /* Invert colors */
         }
-
-        /* Transparent canvas for scrolling */
-        .scrollable-canvas {
-            width: 100vw;
-            height: 200vh; /* Large enough for scrolling */
-            background-color: transparent; /* Make the canvas invisible */
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Video feed stays fixed and full-screen */
-        .video-feed {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            object-fit: cover;
-            z-index: 10; /* Higher than canvas */
-        }
-
-        /* Text instruction for scrolling */
-        .scroll-instruction {
-            position: fixed;
-            left: 50%;
-            transform: translateX(-50%);
-            font-family: 'Times New Roman', serif;
-            font-size: 1em; /* Responsive to user's default font size */
-            color: #ffffff; /* White text for contrast */
-            background: none;
-            z-index: 20;
-            transition: bottom 0.3s ease; /* Smooth movement of the text */
-        }
-
-        /* Fallback message if camera access fails */
-        .error-message {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #ffffff; /* White text for contrast */
-            font-family: 'Times New Roman', serif;
-            font-size: calc(1em + 10%); /* User's default font size + 10% */
-            text-align: center;
-            display: none; /* Hidden by default */
-        }
     </style>
 </head>
 <body>
-    <!-- Transparent canvas for scrolling -->
-    <div class="scrollable-canvas"></div>
-
     <!-- Add a container for the VR-like camera preview -->
     <div id="vrContainer">
         <div id="videoContainer">
-            <video id="videoElement1" class="video-feed" autoplay playsinline></video>
+            <video id="videoElement1" autoplay playsinline></video>
         </div>
         <div id="videoContainer">
-            <video id="videoElement2" class="video-feed" autoplay playsinline></video>
+            <video id="videoElement2" autoplay playsinline></video>
         </div>
-    </div>
-
-    <!-- Scroll instruction -->
-    <div id="scrollInstruction" class="scroll-instruction">
-        Scroll to enter/exit fullscreen
-    </div>
-
-    <!-- Fallback error message for blocked camera -->
-    <div id="errorMessage" class="error-message">
-        camera access is blocked.<br>please enable camera permissions in your browser settings or use a different browser.
     </div>
 
     <script>
@@ -114,18 +55,12 @@
                 width: { ideal: 3840 }, // 4K resolution width (ideal)
                 height: { ideal: 2160 }, // 4K resolution height (ideal)
                 frameRate: { ideal: 60 }, // Aim for 60 fps for smoother video
-                advanced: [
-                    { noiseSuppression: false }, // Disable noise suppression (experimental)
-                    { aspectRatio: 1.33 }, // Prefer wide-angle lens (if available, 4:3 aspect ratio)
-                    { width: { min: 1920 }, height: { min: 1080 } } // Wide angle resolution constraint (minimum Full HD)
-                ]
+                advanced: [{ noiseSuppression: false }] // Disable noise suppression (experimental)
             },
             audio: false
         };
 
         var videoElements = [document.getElementById("videoElement1"), document.getElementById("videoElement2")];
-        const scrollInstruction = document.getElementById('scrollInstruction');
-        const errorMessage = document.getElementById('errorMessage');
 
         navigator.mediaDevices.getUserMedia(constraints)
         .then(function(stream) {
@@ -138,55 +73,7 @@
         })
         .catch(function(error) {
             console.error("Camera access denied or error:", error);
-            showError();
         });
-
-        // Show fallback message if camera access is blocked
-        function showError() {
-            errorMessage.style.display = 'block';
-            videoElements.forEach(function(videoElement) {
-                videoElement.style.display = 'none'; // Hide the video feed
-            });
-            scrollInstruction.style.display = 'none'; // Hide scroll instruction when camera is blocked
-        }
-
-        // Function to dynamically adjust the position of the text instruction
-        function adjustTextPosition() {
-            const viewportHeight = window.innerHeight; // Height of the visible viewport
-            const fullHeight = window.innerHeight || document.documentElement.clientHeight;
-            const diff = fullHeight - viewportHeight; // Difference due to the URL bar
-            
-            // Adjust the text to be above the browser UI (URL bar) if it's visible
-            if (diff > 0) {
-                scrollInstruction.style.bottom = diff + 20 + 'px'; // Place above the URL bar
-            } else {
-                scrollInstruction.style.bottom = '20px'; // Bottom of the screen
-            }
-        }
-
-        // Call the function to adjust the text position on load and resize
-        adjustTextPosition();
-        window.addEventListener('resize', adjustTextPosition);
-
-        // Move the text to the very bottom of the screen on scroll
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 0) {
-                scrollInstruction.style.bottom = '10px'; // Stick to the bottom when scrolled
-            } else {
-                adjustTextPosition(); // Reset to its calculated position when at the top
-            }
-        });
-
-        // Adjust video to ensure it fits full screen
-        function adjustVideoFit() {
-            videoElements.forEach(function(videoElement) {
-                videoElement.style.width = '100vw';
-                videoElement.style.height = '100vh';
-            });
-        }
-
-        // Re-adjust video size on window resize or orientation change
-        window.addEventListener('resize', adjustVideoFit);
     </script>
 </body>
 </html>
